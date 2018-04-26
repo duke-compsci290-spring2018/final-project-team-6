@@ -9,7 +9,8 @@
                 "wednesday": [ 10, 2 ],
                 "thursday": [ 10, 2 ],
                 "friday": [ 10, 2 ],
-                "saturday": [ 9, 11, 1, 3 ]
+                "saturday": [ 9, 11, 1, 3 ],
+                "sunday": [ 9, 11, 1, 3 ]
             },
             "location": [ 36.00, 78.93 ]
         },
@@ -21,7 +22,8 @@
                 "wednesday": [ 10, 2 ],
                 "thursday": [ 10, 2 ],
                 "friday": [ 10, 2 ],
-                "saturday": [ 9, 11, 1, 3 ]
+                "saturday": [ 9, 11, 1, 3 ],
+                "sunday": [ 9, 11, 1, 3 ]
             },
             "location": [ 42.37, 71.11 ]
         },
@@ -33,7 +35,8 @@
                 "wednesday": [ 10, 2 ],
                 "thursday": [ 10, 2 ],
                 "friday": [ 10, 2 ],
-                "saturday": [ 9, 11, 1, 3 ]
+                "saturday": [ 9, 11, 1, 3 ],
+                "sunday": [ 9, 11, 1, 3 ]
             },
             "location": [ 41.32, 72.92 ]
         },
@@ -45,7 +48,8 @@
                 "wednesday": [ 10, 2 ],
                 "thursday": [ 10, 2 ],
                 "friday": [ 10, 2 ],
-                "saturday": [ 9, 11, 1, 3 ]
+                "saturday": [ 9, 11, 1, 3 ],
+                "sunday": [ 9, 11, 1, 3 ]
             },
             "location": [ 40.34, 74.65 ]
         },
@@ -57,7 +61,8 @@
                 "wednesday": [ 10, 2 ],
                 "thursday": [ 10, 2 ],
                 "friday": [ 10, 2 ],
-                "saturday": [ 9, 11, 1, 3 ]
+                "saturday": [ 9, 11, 1, 3 ],
+                "sunday": [ 9, 11, 1, 3 ]
             },
             "location": [ 41.83, 71.40 ]
         },
@@ -69,7 +74,8 @@
                 "wednesday": [ 10, 2 ],
                 "thursday": [ 10, 2 ],
                 "friday": [ 10, 2 ],
-                "saturday": [ 9, 11, 1, 3 ]
+                "saturday": [ 9, 11, 1, 3 ],
+                "sunday": [ 9, 11, 1, 3 ]
             },
             "location": [ 42.36, 71.09 ]
         },
@@ -81,7 +87,8 @@
                 "wednesday": [ 10, 2 ],
                 "thursday": [ 10, 2 ],
                 "friday": [ 10, 2 ],
-                "saturday": [ 9, 11, 1, 3 ]
+                "saturday": [ 9, 11, 1, 3 ],
+                "sunday": [ 9, 11, 1, 3 ]
             },
             "location": [ 39.95, 75.19 ]
         },
@@ -93,7 +100,8 @@
                 "wednesday": [ 10, 2 ],
                 "thursday": [ 10, 2 ],
                 "friday": [ 10, 2 ],
-                "saturday": [ 9, 11, 1, 3 ]
+                "saturday": [ 9, 11, 1, 3 ],
+                "sunday": [ 9, 11, 1, 3 ]
             },
             "location": [ 43.70, 72.29 ]
         },
@@ -105,7 +113,8 @@
                 "wednesday": [ 10, 2 ],
                 "thursday": [ 10, 2 ],
                 "friday": [ 10, 2 ],
-                "saturday": [ 9, 11, 1, 3 ]
+                "saturday": [ 9, 11, 1, 3 ],
+                "sunday": [ 9, 11, 1, 3 ]
             },
             "location": [ 42.71, 73.20 ]
         },
@@ -117,7 +126,8 @@
                 "wednesday": [ 10, 2 ],
                 "thursday": [ 10, 2 ],
                 "friday": [ 10, 2 ],
-                "saturday": [ 9, 11, 1, 3 ]
+                "saturday": [ 9, 11, 1, 3 ],
+                "sunday": [ 9, 11, 1, 3 ]
             },
             "location": [ 40.81, 73.96 ]
         }
