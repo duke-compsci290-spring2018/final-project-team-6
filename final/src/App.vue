@@ -75,12 +75,12 @@ export default {
                 {
                     username: "admin",
                     password: "AdminPassword",
-                    trips:{}
+                    trips:[]
                 },
                 {
                     username: "guest",
                     password: "",
-                    trips:{}
+                    trips:[]
                 }
             ], //Array of user objects (username, password, trips)
             
@@ -194,7 +194,7 @@ export default {
             var signInScreen = document.getElementById("start_page_div");
             var createSchedScreen = document.getElementById("schedCreateContainer");
             this.activeUser = "guest";
-            signInScreen.style.display = "none";
+            //signInScreen.style.display = "none";
             createSchedScreen.style.display = "block";
             return;
         }

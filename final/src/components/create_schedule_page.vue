@@ -140,6 +140,8 @@
                 //Find length of trip to make sure you have enough days for schools selected
                 var tripL = this.tripLength(sd, ed);
                 
+                //ADD A CHECK THAT BOTH DATES ARE SELECTED
+                
                 //check that user is logged in
                 if(this.activeUser == "guest"){
                     alert("Sorry, but only users can create new schedules! Sign up on our home screen to use this function!")
@@ -177,7 +179,7 @@
                         //This is where valid trips are found
                         //Loop through JSON file to find schools in schoolsList
                         for(var j = 0; j<this.schoolDat.schools.length; j++){
-                            console.log("Searching schoolDat");
+                            //console.log("Searching schoolDat");
                             //If the school was in schoolsList (mySchools) array
                             if(schoolsList.indexOf(this.schoolDat.schools[j].name) != -1){
                                 //add this school and its information to my local array
