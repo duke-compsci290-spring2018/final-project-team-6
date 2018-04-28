@@ -34,14 +34,15 @@
                     :datesSelectorInput
                     :public projects to view-->
             </createSchedComp>
+        </div> 
+<!--        <button id="mapButton" @click="showMap()">Click for map test</button>-->
+<!--
+        <div id="mapTest" style="display:none">
+            <googleMap
+                :name="example">
+            </googleMap>
         </div>
-        <viewSchedComp>
-            <!--add probs inside the ">"
-                :Schedule calendar prop
-                :map display
-                ????-->
-        </viewSchedComp>
-      
+-->
     </div>
 </template>
 
@@ -56,6 +57,7 @@
     //Import components used here
     import createSchedComp from './components/create_schedule_page.vue';
     import viewSchedComp from './components/view_schedule_page.vue';
+    //import googleMap from './components/google_map.vue';
     
     //Importing json file of school data
     import schoolData from './assets/final_sample.json';
@@ -91,8 +93,13 @@ export default {
     components:{
         createSchedComp,
         viewSchedComp
+     //   googleMap
     },
     methods:{
+//        showMap(){
+//            var mapTest = document.getElementById("mapTest");
+//            mapTest.style.display = "block";
+//        },
         signIn(userName, userPassword){
             var i = 0;
             var signInScreen = document.getElementById("start_page_div");

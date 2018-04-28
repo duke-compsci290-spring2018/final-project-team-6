@@ -14,6 +14,10 @@
                     End Date: <input id="end_date" type="date" v-model="endDate" @change="endDateConvert(endDate)">
                 </p>
             </div>
+            <div class="hometown col-12">
+                <h4 class="sub1"> Enter Your Starting Zip Code</h4>
+                <input class="sub1" id="zip_input" v-model="startZip" placeholder="Zip Code"><br>
+            </div>
             <div class="school_select_div col-12">
                 <h4 class="sub1">Select your schools: </h4>
                 <div class="schoolDropDown">
@@ -41,7 +45,7 @@
                 </div>
             </div>
             <br>
-            <button class="create_schedules" @click="createSchedule(mySchools, startDate, endDate)">Create Your Schedules!</button>
+            <button class="create_schedules" @click="createSchedule(mySchools, startDate, endDate,startZip)">Create Your Schedules!</button>
         </div>
         <hr>
         
@@ -52,6 +56,13 @@
         
         <div id="public_schedules">
             <h3>View Others' Schedules!</h3>
+        </div>
+        <div id="schedViewContainer" style="display:none">
+            <div class="header">
+                <h1>College ConnecTour</h1>
+                <p id="currUser">User: {{activeUser}}</p>
+            </div>
+            <hr>
         </div>
     </div>
 </template>
@@ -76,7 +87,10 @@
                 endDay: "", //Monday = 0... Sunday = 6;
                 mySchools: "", //In firebase must initialize to something
                 pubAccess: 1, //value 1 = private; value 0 = public (with radio buttons)
-                
+                startZip: "",
+                schedSchools: "",
+                userIndex: -1,
+                tripL: 0
                 
             }
         },
@@ -93,8 +107,11 @@
             representing day of the week to use in JSON file*/
             //Dont think we need to use this at all anymore
             startDateConvert(sDate){
+                console.log(sDate);
                 var sd = new Date(sDate);
+                console.log(sd);
                 this.startDay = sd.getDay();
+                console.log(this.startDay);
                 return;
             },
             
@@ -131,16 +148,24 @@
             
             /*Function that creates schedules and moves to next component view 
             when clicked: check for valid input from user*/
-            createSchedule(schoolsList, start, end){
+            createSchedule(schoolsList, start, end, zip){
+                //check that dates have been entered
+                if(start == "" || end == ""){
+                    alert("Please enter valid start and end dates")
+                }
                 var sd = new Date(start);
                 var ed = new Date(end);
                 var thisUser = {};
                 var mySchoolsInfo = [];
                 var userDex = -1;
                 //Find length of trip to make sure you have enough days for schools selected
-                var tripL = this.tripLength(sd, ed);
+                this.tripL = this.tripLength(sd, ed);
                 
-                //ADD A CHECK THAT BOTH DATES ARE SELECTED
+                //check for valid zip code
+                if(zip.length != 5){
+                    alert("Please enter a valid zip code");
+                    this.startZip = "";
+                }
                 
                 //check that user is logged in
                 if(this.activeUser == "guest"){
@@ -149,7 +174,7 @@
                 }
                 
                 //Make sure all required fields are filled out with workable information
-                if(tripL < 1 || sd < new Date() || ed < new Date() || ed < sd){
+                if(sd < new Date() || ed < new Date() || ed < sd){
                     alert("Please select valid dates for your trip");
                     this.startDate = "";
                     this.endDate = "";
@@ -163,7 +188,7 @@
                 }
                 
                 //If more schools selected than days in the trip--- don't calculate schedules
-                if(tripL+1 < schoolsList.length){
+                if(this.tripL+1 < schoolsList.length){
                     alert("Sorry! Your trip isn't long enough to visit all those schools!")
                     return;
                 }
@@ -191,10 +216,40 @@
                 }
                 
                 //Here, mySchoolsInfo contains school objects of all your selected schools
-                console.log(mySchoolsInfo);
-                
+                this.schedSchools = mySchoolsInfo;
+                console.log(this.schedSchools);
+                var viewSchedScreen = document.getElementById("schedViewContainer");
+                viewSchedScreen.style.display = "block";
+                this.userIndex = userDex;
                 //Loop through mySchoolsInfo and assign dates and times for all selected schools
                 //Add each schedule to thisUser.trips then add thisUser back into this.usersArray at "userDex" index
+                var counter = this.startDay;
+                var tp = [];
+                var tourFound = false;
+                for(var q = 0; q < this.tripL+1; q++){
+                    tourFound = false;
+                    for(var d = 0; d < this.schedSchools.length; d++){
+                        if(this.schedSchools[d].tours[counter] == 1 && tourFound == false){
+                            tp.push(q);
+                            tp.push(counter);
+                            tp.push(this.schedSchools[d].tours[counter]);
+                            tp.push(this.schedSchools[d].name);
+                            tourFound = true;
+                        }
+
+                    }
+                    if(tourFound == false){
+                        tp.push(q);
+                        tp.push(counter);
+                        tp.push('no school available');
+                    }
+                    if(counter == 6){
+                        counter = 0;
+                    }else{
+                        counter += 1;
+                    }
+                }
+                console.log(tp);
                 
                 
                 
