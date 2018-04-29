@@ -1,2 +1,30 @@
-# final-project
-Separate repository for Final Project to make it easier to share or experiment with
+# final-project -- College ConnecTour Web Application
+
+Ryan Bloom (rab83) and Daniel Bernt (dvb6)
+
+For our final project we created a web application that people can use to plan college tour visits.  My younger brother is currently going through the process of visiting colleges, and I always hear my mom complaining about how difficult it is to coordinate college visits and tours.  Therefore, we felt that this project not only met the requirements, but was interesting and provided a much needed service.  
+
+-- Data Used --
+At first, we planned on finding tour dates and times from various colleges to compile our dataset.  However, this was an unrealistic expectation due to the fact that the schools' data is all in different locations and formats and with different accessibility requirements.  Therefore, we decided to create our own "fake dataset" containing school objects with names, tours, and location attributes.  The locations are represented as latitude and longitude.  We use these values later when a user creates a schedule in order to plot the locations of the schools that he/she selected on a map using the google maps api.
+
+-- Code Libraries --
+To create our application, we used vue in order to make for easier data storage.  Furthermore, we grew very comfortable with using vue and firebase in order to store information through the "trello" project, and we felt that the combination of vue, javascript, and jquery would be a reasonable approach for creating our application.  
+
+-- Roles --
+Upon accessing our application, the user is prompted to either log in, sign up, or continue as guest.  If the user logs in with the predetermined administrator username (admin) and password (AdminPassword), he or she is using the application as the administrator and can do more things than a user or a guest.  For example, the administrator can __________________________________________________________________________________________________________________________________________________________________________________________________.
+
+If the user signs in or signs up (if he or she does not already have an account), his/her username and password are stored in the "users" data object and he/she is made the "activeUser" of the site.  As a user, one can select dates of a desired trip, select schools that he/she wishes to visit, and create new trip schedules.  The user can also decide whether or not he/she wants these schedules to be public or private.  If the schedules are made public, that means that other users (as well as guests without accounts) can view these schedules.  This is usefull for guests because guests can not create their own schedules, a function that only administrators and users can use.  However, guests can view public schedules based on the length of the trip and the schools being visited so that if the guest wants to visit the same schools, he/she can still find use from the applicaiton.  
+
+Furthermore, once a user creates trips, he/she can loop through various permutations of the trips and save ones that he/she likes to his/her own trips log, these trips can later be removed from their saved trips as well.  Then, once signing out and signing back in, the user's previously saved trips are displayed to him/her and can be viewed again.  Furthermore, if a user wishes to visit a school that is not shown in our dropdown select box, then he/she can add this school to our dataset, making our data dynamic and ever growing.  
+
+-- Robust --
+Our application checks a variety of inputs to make sure that they are not goinig to hinder the functionality of the application.  First, we check when a user signs in to see if the username and password are a match found in our dataset.  Also, when signing up, we check to make sure the desired username is not already in the dataset and that the password is at least 6 characters long.  Then, once logged in (as administrator, user, or guest), we preform more checks to make sure that trip data is accurate.  
+
+When a user selects dates for his/her trip from the start and end date inputs, before allowing a schedule to be generated, we ensure that the dates are: i) not in the past, ii) far enough appart to accommodate visiting the number of schools he/she selcted, iii) start date is before the end date.  Additionally, we check to make sure that the start zip code is either a valid zip code (five numerical digits) or empty (because this field is optional in case users do not feel comfortable providing this information).  Additionally, we check to make sure the user did not select too many schools for the length of his/her trip and we ensure that all required fields are filled out. Finally, if a user tries to save a trip that is already saved to his/her data, we check to make sure it is not duplicated and added agian.  
+
+-- Using the Application --
+In order to use our application, users simply sign in or sign up and then start planning their trip.  The select dates that they want to travel and schools that the wish to visit.  Then they select whether or not to make their trips public or private (which is alwys initialized to private for security reasons).  Once they click the "create your schedules!" button, they are taken to another screen that displays various schedules accommodating their school visit desires and their dates of travel.  Furthermore, the schools that they wish to visit are displayed on a map as well so that they can visualize their trip.  If the user doesn't like any of the trips genreated, he/she can click the "Want a different set of schedules?" button in order to generate new permutations of the same trip.  If the user sees a trip that he/she likes, clicking the "Save this schedule!" button will save that schedule to his/her trips data.  Then, upon logging out and logging back in, the user's trips are displayed in the "View Your Schedules!" section of the webpage.
+
+Additionally, if a user continues as guest instead of signing in or signing up, then he/she can not create trips of his/her own.  However he/she can view others' trips that were made public in order to get a general idea of ways to visit similar schools in similar time periods.  Guests can not save schedules either.  When viewing public or previously saved trips, the user starts at the trip that they selected and can switch between other of their own or public trips using the "next" and "prev" buttons.  
+  
+

@@ -7,6 +7,15 @@
   margin-top: 60px;
 }
 
+.your_trips{
+    display: block;
+    border: solid;
+}
+.other_trips{
+    display: block;
+    border: solid;
+}
+
 #logout{
     display: block;
     float: right;

@@ -98,15 +98,30 @@
 
                 <div id="user_schedules">
                     <h3>View Your Schedules!</h3>
-                    <div class="your_scheduals" v-for="trip in users[userIndex].trips" class="col-4">
-                        {{trip.length - 2}} day(s) trip
-                        Schools: {{mySchools}} <!-- this isnt the right schools, this is current schools-->
+                    <div class="your_schedules row">
+                        <div class="your_trips col-4" v-for="trip in users[userIndex].trips">
+                            <p>
+                                Trip Length: {{trip.length -2 }} day(s) <br>
+                                Schools: {{users[userIndex].schoolsCor[users[userIndex].trips.indexOf(trip)]}}
+                            </p>
+                            <button id="view_old_schedules" @click="viewOldSched(users[userIndex].trips.indexOf(trip), users[userIndex].trips)">View Now</button>
+                            <button id="remove_saved" @click="removeSaved(users[userIndex].trips.indexOf(trip), userIndex)">Remove</button>
+                        </div>
                     </div>
                     <hr>
                 </div>
 
                 <div id="public_schedules">
-                    <h3>View Others' Schedules!</h3>
+                    <h3>View Public Schedules!</h3>
+                    <div class="pub_scheds row">
+                        <div class="other_trips col-4" v-for="trip in publicTrips">
+                            <p>
+                                Trip Length: {{trip.length - 1}} day(s) <br>
+                                Schools: {{pubSchools[publicTrips.indexOf(trip)]}}
+                            </p>
+                            <button id="view_old_pub_schedules" @click="viewPubTrip(publicTrips.indexOf(trip), publicTrips)">View Now</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div> 
@@ -118,7 +133,7 @@
             </div>
             <hr>
             <div id="scheduleView" class="col-12">
-                <h3 id="scheduleViewLeft">Schedule number: {{schedDex+1}}</h3>
+                <h3 id="scheduleViewLeft">Schedule number: {{schedDex+1}} of {{schedDisplay.length}}</h3>
                 <div id="schedDisp" v-for="day in schedDisplay[schedDex]" class="col-6">
                     {{day}}
                 </div>
@@ -130,7 +145,7 @@
                 <button id="moreSched" @click="createSchedule(mySchools, startDate, endDate, startZip)">
                     Want a different set of schedules?
                 </button> <br>
-                <button id="newSched" @click="newTrip()">Plan Another Trip!</button>
+                <button id="newSched" @click="newTrip()">Return to Plan Another Trip!</button>
             </div>
         </div> 
 <!--        <button id="mapButton" @click="showMap()">Click for map test</button>-->

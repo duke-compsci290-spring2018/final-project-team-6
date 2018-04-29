@@ -62,35 +62,42 @@ var app = new Vue({
         newUsername: "",
         newPassword: "",
         confirmPassword: "",
-        activeUser: "",
-        users: [
+        activeUser: "", //Remember in firebase
+        users: [ //Remember in firebase
             {
                 username: "admin",
                 password: "AdminPassword",
-                trips:[]
+                trips:[],
+                schoolsCor:[]
             },
             {
                 username: "guest",
                 password: "",
-                trips:[]
+                trips:[],
+                schoolsCor:[]
             }
-        ], //Array of user objects (username, password, trips)
+        ],
+        //array of saved trips that people make public for guests to view
+        publicTrips: [], //Remember in firebase
+        pubSchools:[], //Remember in firebase
+        
         //JSON file of school data
-        schoolDat: schoolJSON,
+        schoolDat: schoolJSON, //Remember in firebase
+        
         //Temporary data to store user inputs
-        startDate: "", //date, want day of week
-        endDate: "", //date, want day of week
-        startDay: "", //Monday = 0... Sunday = 6
-        endDay: "", //Monday = 0... Sunday = 6;
-        mySchools: "", //In firebase must initialize to something
-        pubAccess: 1, //value 1 = private; value 0 = public (with radio buttons)
-        startZip: "",
-        schedSchools: "", //same as mySchools?
-        userIndex: 0, //To find user in users to add trips to this user
-        tripL: 0, //Will be the length of the user's trip
-        genSchedules: "", //schedules generated for the user after clicking "create Schedule" button
-        schedDisplay: "", //used to display genSchedules to user
-        schedDex: 0, //used to loop through created schedules
+        startDate: "", //date, want day of week //Remember in firebase
+        endDate: "", //date, want day of week //Remember in firebase
+        startDay: "", //Monday = 0... Sunday = 6 //Remember in firebase
+        endDay: "", //Monday = 0... Sunday = 6; //Remember in firebase
+        mySchools: "", //In firebase must initialize to something //Remember in firebase
+        pubAccess: 1, //value 1 = private; value 0 = public (with radio buttons) //Remember in firebase
+        startZip: "", //Remember in firebase
+        schedSchools: "", //same as mySchools? //Remember in firebase
+        userIndex: 0, //To find user in users to add trips to this user //Remember in firebase
+        tripL: 0, //Will be the length of the user's trip //Remember in firebase
+        genSchedules: "", //schedules generated for the user after clicking "create Schedule" button //Remember in firebase
+        schedDisplay: "", //used to display genSchedules to user //Remember in firebase
+        schedDex: 0, //used to loop through created schedules //Remember in firebase
     },
 
     methods: {
@@ -177,10 +184,11 @@ var app = new Vue({
             this.users.push({
                 username: userName.toLowerCase(),
                 password: userPassword,
-                trips: []
+                trips: [],
+                schoolsCor: []
             })
             
-            this.userIndex = this.users.length;
+            this.userIndex = this.users.length-1;
             //console.log(this.users)
             
             //Show desired screens
@@ -325,6 +333,16 @@ var app = new Vue({
                 alert("Sorry! Your trip isn't long enough to visit all those schools!")
                 return;
             }
+            
+            //Re-enable the buttons if they had been disabled by viewing an old schedule
+            var prevButton = document.getElementById("prevSched");
+            prevButton.disabled =false;
+            
+            var nxtButton = document.getElementById("nextSched");
+            nxtButton.disabled = false;
+            
+            var newSchButton = document.getElementById("moreSched");
+            newSchButton.disabled = false;
 
             //Find this user's trips in users to add trips to the user object
             for(var i=0; i<this.users.length; i++){
@@ -350,6 +368,7 @@ var app = new Vue({
 
             //Here, schedSchools and mySchoolsInfo contains school objects of all your selected schools
             this.schedSchools = mySchoolsInfo;
+            this.schedDex = 0;
             //console.log(this.schedSchools);
             
             var createSchedScreen = document.getElementById("schedCreateContainer");
@@ -436,6 +455,7 @@ var app = new Vue({
                     var date = new Date(start);
                     date.setDate(firstDate.getDate()+sd + 1);
                     //console.log(date.toString());
+                    
                     sc[sd] = date + ": " + activity + "\n";
                     //this.schedDisplay[scheds] += date + ": " + activity + "\n";
                 }
@@ -456,7 +476,7 @@ var app = new Vue({
         
         //move to viewing next schedule
         nextSch(sdex){
-            if(sdex == this.genSchedules.length-1){
+            if(sdex == this.schedDisplay.length-1){
                 return;
             }
             this.schedDex = sdex + 1;
@@ -465,16 +485,46 @@ var app = new Vue({
         
         //Click this to save the current schedule being viewed to user's trips object
         favorite(currSched){
+            if(this.activeUser == "guest"){
+                alert("Sorry! Guests can't save trips! Sign-up to do so!");
+                return;
+            }
+            
             //console.log(this.startDate + 1);
-            console.log(currSched);
+            //console.log(currSched);
             //Add user to the saved schedule
             currSched.push(this.activeUser);
             //Add a 0 or 1 for public vs. private
             currSched.push(this.pubAccess);
             
+            //User already saved the trip or is looking at an old trip
+            if((this.users[this.userIndex].trips.indexOf(currSched) != -1)){
+                alert("You already have this trip saved!");
+                currSched.pop();
+                currSched.pop();
+                return;
+            }
+            
+            //console.log(this.mySchools);
             //Add this schedule to this user's trips
+            var schoolsArray = new Array(this.mySchools.length);
+            for(var i = 0; i < this.mySchools.length; i++){
+                schoolsArray[i] = this.mySchools[i];
+            }
+        
+            
             this.users[this.userIndex].trips.push(currSched);
-            console.log(this.users[this.userIndex].trips)
+            this.users[this.userIndex].schoolsCor.push(schoolsArray);
+            //console.log(this.users[this.userIndex].trips);
+            //console.log(this.users[this.userIndex].schoolsCor);
+            
+            //If this trip was made public, add it to the public trips array
+            if(this.pubAccess == 0){
+                //Don't need to include the final element because that tells public or private
+                this.publicTrips.push(currSched.slice(0,this.tripL+1));
+                this.pubSchools.push(schoolsArray);
+            }
+            //console.log(this.publicTrips);
             return;
         },
         
@@ -487,6 +537,51 @@ var app = new Vue({
             createSchedScreen.style.display = "block";
         },
         
+        //To view an old schedule that you made or that is public and you are a guest
+        viewOldSched(dex, oldTrips){
+            console.log(oldTrips);
+            //var signInScreen = document.getElementById("start_page_div");
+            var createSchedScreen = document.getElementById("schedCreateContainer");
+            var viewSchedScreen = document.getElementById("schedViewContainer");
+
+            //signInScreen.style.display = "block";
+            createSchedScreen.style.display = "none";
+            viewSchedScreen.style.display = "block";
+            
+            this.schedDisplay = oldTrips;
+            //this.genSchedules = oldTrips;
+            this.schedDex = dex;
+            
+            //disable buttons allowing users to view other permutations of schedules
+            //var prevButton = document.getElementById("prevSched");
+            //prevButton.disabled =true;
+            
+            //var nxtButton = document.getElementById("nextSched");
+            //nxtButton.disabled = true;
+            
+            var newSchButton = document.getElementById("moreSched");
+            newSchButton.disabled = true;
+        },
+        
+        //remove a previously saved trip from user's trips
+        removeSaved(tDex, uDex){
+            //console.log(uDex);
+            //console.log(tDex);
+            this.users[uDex].trips.splice(tDex,1);
+        },
+        
+        //To view public trips
+        viewPubTrip(dex, pubTrips){
+            var createSchedScreen = document.getElementById("schedCreateContainer");
+            var viewSchedScreen = document.getElementById("schedViewContainer");
+
+            //signInScreen.style.display = "block";
+            createSchedScreen.style.display = "none";
+            viewSchedScreen.style.display = "block";
+            
+            this.schedDisplay = pubTrips;
+            this.schedDex = dex;
+        },
 
         //Helper function called in "createSchedule" method to 
         //Check if the schedule generated has already been listed
