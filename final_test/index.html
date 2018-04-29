@@ -49,6 +49,7 @@
                 <div class="header">
                     <h1>College ConnecTour</h1>
                     <p id="currUser">User: {{activeUser}}</p>
+                    <button id="logout" @click="logout()">Logout</button>
                 </div>
                 <hr>
                 <div id="schedule_creator">
@@ -97,19 +98,39 @@
 
                 <div id="user_schedules">
                     <h3>View Your Schedules!</h3>
+                    <div class="your_scheduals" v-for="trip in users[userIndex].trips" class="col-4">
+                        {{trip.length - 2}} day(s) trip
+                        Schools: {{mySchools}} <!-- this isnt the right schools, this is current schools-->
+                    </div>
                     <hr>
                 </div>
 
                 <div id="public_schedules">
                     <h3>View Others' Schedules!</h3>
                 </div>
-                <div id="schedViewContainer" style="display:none">
-                    <div class="header">
-                        <h1>College ConnecTour</h1>
-                        <p id="currUser">User: {{activeUser}}</p>
-                    </div>
-                    <hr>
+            </div>
+        </div> 
+        <div id="schedViewContainer" style="display:none">
+            <div class="header">
+                <h1>College ConnecTour</h1>
+                <p id="currUser">User: {{activeUser}}</p>
+                <button id="logout" @click="logout()">Logout</button>
+            </div>
+            <hr>
+            <div id="scheduleView" class="col-12">
+                <h3 id="scheduleViewLeft">Schedule number: {{schedDex+1}}</h3>
+                <div id="schedDisp" v-for="day in schedDisplay[schedDex]" class="col-6">
+                    {{day}}
                 </div>
+                <button id="prevSched" @click="prevSch(schedDex)">prev</button>
+                <button id="nextSched" @click="nextSch(schedDex)">next</button>
+                <br>
+                <button id="fav" @click=favorite(schedDisplay[schedDex])>Save This Schedule!</button>
+                <br>
+                <button id="moreSched" @click="createSchedule(mySchools, startDate, endDate, startZip)">
+                    Want a different set of schedules?
+                </button> <br>
+                <button id="newSched" @click="newTrip()">Plan Another Trip!</button>
             </div>
         </div> 
 <!--        <button id="mapButton" @click="showMap()">Click for map test</button>-->

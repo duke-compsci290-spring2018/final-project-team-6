@@ -86,8 +86,11 @@ var app = new Vue({
         pubAccess: 1, //value 1 = private; value 0 = public (with radio buttons)
         startZip: "",
         schedSchools: "", //same as mySchools?
-        userIndex: -1, //To find user in users to add trips to this user
-        tripL: 0
+        userIndex: 0, //To find user in users to add trips to this user
+        tripL: 0, //Will be the length of the user's trip
+        genSchedules: "", //schedules generated for the user after clicking "create Schedule" button
+        schedDisplay: "", //used to display genSchedules to user
+        schedDex: 0, //used to loop through created schedules
     },
 
     methods: {
@@ -115,9 +118,10 @@ var app = new Vue({
                     if(pw == userPassword){
                         //set active user to userName to use later components
                         this.activeUser = un;
+                        this.userIndex = i;//set the user index to find this user's trips
                         alert("Welcome back " + userName + "!");
                         //Hide the sign in screen and take user to create schedule screen
-                        //signInScreen.style.display = "none";
+                        signInScreen.style.display = "none";
                         createSchedScreen.style.display = "block";
                         this.returnUsername = "";
                         this.returnPassword = "";
@@ -173,12 +177,14 @@ var app = new Vue({
             this.users.push({
                 username: userName.toLowerCase(),
                 password: userPassword,
-                trips: {}
+                trips: []
             })
-            console.log(this.users)
+            
+            this.userIndex = this.users.length;
+            //console.log(this.users)
             
             //Show desired screens
-            //signInScreen.style.display = "none";
+            signInScreen.style.display = "none";
             createSchedScreen.style.display = "block";
             
             //Set active user to userName to be used in later components
@@ -192,15 +198,48 @@ var app = new Vue({
             var signInScreen = document.getElementById("start_page_div");
             var createSchedScreen = document.getElementById("schedCreateContainer");
             this.activeUser = "guest";
-            //signInScreen.style.display = "none";
+            this.userIndex = 1;
+            
+            //Display the desired screens
+            signInScreen.style.display = "none";
             createSchedScreen.style.display = "block";
             return;
         },  
+        
+        //Logout function reserts all attributes specific to the user logged in
+        logout(){
+            //reset all data objects
+            this.activeUser = "";
+            this.startDate = "";
+            this.endDate = "";
+            this.startDay = "";
+            this.endDay = "";
+            this.mySchools = "";
+            this.startZip = "";
+            this.pubAccess = 1;
+            this.userIndex = 0;
+            this.tripL = 0;
+            this.schedSchools = "";
+            this.schedDex = 0;
+            this.genSchedules = "";
+            this.schedDisplay = "";
+            
+            
+            //Display sign-in screen but neither of other two
+            var signInScreen = document.getElementById("start_page_div");
+            var createSchedScreen = document.getElementById("schedCreateContainer");
+            var viewSchedScreen = document.getElementById("schedViewContainer");
+
+            signInScreen.style.display = "block";
+            createSchedScreen.style.display = "none";
+            viewSchedScreen.style.display = "none";
+            
+        },
         /*Turns the start date into an integer (0-6)
         representing day of the week to use in JSON file*/
         //Dont think we need to use this at all anymore
         startDateConvert(sDate){
-            console.log(sDate);
+            //console.log(sDate);
             var sd = new Date(sDate);
             //console.log(sd);
             this.startDay = sd.getDay();
@@ -258,6 +297,7 @@ var app = new Vue({
             if(zip.length != 5){
                 alert("Please enter a valid zip code");
                 this.startZip = "";
+                return;
             }
 
             //check that user is logged in
@@ -311,7 +351,10 @@ var app = new Vue({
             //Here, schedSchools and mySchoolsInfo contains school objects of all your selected schools
             this.schedSchools = mySchoolsInfo;
             //console.log(this.schedSchools);
-
+            
+            var createSchedScreen = document.getElementById("schedCreateContainer");
+            createSchedScreen.style.display = "none";
+            
             var viewSchedScreen = document.getElementById("schedViewContainer");
             viewSchedScreen.style.display = "block";
             this.userIndex = userDex;
@@ -320,103 +363,160 @@ var app = new Vue({
             //Add each schedule to thisUser.trips then add thisUser back into this.users at "userDex" index
             var counter = this.startDay;
             var fact = this.factorial(this.tripL+1 - this.schedSchools.length);//Factorial to multiply length by for permutations
-            //console.log("trip length: ", this.tripL + 1);
-            //console.log("schedSchools length: ", this.schedSchools.length);
-            //console.log("factorial calc: ", fact);
+
+//REMOVED CONSOLE.LOG THINGS HERE
+            var permutations = 0;
             if(this.schedSchools.length == 1){
-                var permutations = this.tripL + 1
+                permutations = this.tripL + 1;
             }
             if(this.schedSchools.length > 1){
-                var permutations = this.factorial((this.tripL+1))/(fact);  
-            } 
-            console.log("permutations", permutations);
+                permutations = this.factorial((this.tripL+1))/(fact);  
+            }
+            
+            if(permutations > 5){
+                permutations = 5;
+            }
 
             //Array of trips length of trip 
             //Add individual tps into allTrips array
-            var allTrips = new Array(permutations);
-            for(var i = 0; i < allTrips.length; i++){
-                var trip = new Array(this.tripL + 1);
-                for(var j = 0; j < trip.length; j++){
-                    trip[j] = "No Tour";
-                }
-                allTrips[i] = trip;
-            }
-            //console.log(permutations);
-            //console.log(allTrips.length);
-            //var tp = new Array(this.tripL+1);
-            var count = 0; 
-            for(var s = 0; s<this.schedSchools.length; s++){
-                var count = 0;
-                var timeThrough = 0;
-                var sch = this.schedSchools[s];
-                var dex = s-1
-                for(var q = 0; q<permutations; q++){//loop through each possible trip
-                    dex += 1;
-                    if(dex >= (this.tripL + 1)){
-                        if(count >= this.tripL + 1){
-                            if(count % (this.tripL + 1) == 0){
-                                timeThrough += 1;
-                            }
-                        dex = dex + (s*timeThrough);
+            var allTrips = [];
+            
+            //Loop through each trip (1-5)
+            for(q = 0; q<permutations; q++){
+                var conflict = true;
+                var hit = 0;
+                
+                //check if this schedule already been made
+                while(conflict == true){
+                    var tempSched = this.singleSched((this.tripL + 1), this.schedSchools.length);
+                    for(var t=0; t<allTrips.length; t++){
+                        var oldSched = allTrips[t].toString();
+                        var newSched = tempSched.toString();
+                        if(oldSched == newSched){
+                            hit += 1;
                         }
-                        //console.log("dex = ", dex);
-                        //console.log("length = ", (this.tripL + 1));
-                        dex = dex % (this.tripL + 1);
-                        //dex = (this.tripL)%(dex - (this.tripL + 1));
-                        //console.log("new dex = ", dex);
                     }
-                    allTrips[q][dex] = sch.name;
-                    count += 1;
+                    if(hit == 0){
+                        conflict = false;
+                    }
+                    else{
+                        conflict = true;
+                        hit = 0;
+                    }
                 }
-
-                //console.log(allTrips);
+                allTrips.push(tempSched);
+                conflict = true;
             }
-            console.log("AllTrips Array: ", allTrips);
-            /*
-            for(var q = 0; q < allTrips.length; q++){ //loop over all permutations of schedules
-                var tp = new Array(this.tripL + 1); //each index represents day of the trip to visit a school
-                for(var s = 0; s<this.schedSchools.length; s++){ //loop over all the schools that user wants to visit
-                    var sch = this.schedSchools[s];
-                    for(var d = 0; d<tp.length; d++){//add sch to diff days on the trip
-                        allTrips[q][d] = sch; //set the school to day d in tp q in allTrips
+            
+            //Store all the trips created in genSchedules data object
+            this.genSchedules = allTrips;
+            this.schedDisplay = new Array(allTrips.length);
+            //this.genSchedules holds diff schools at indices representing day of the trip to visit this school
+            //console.log(this.genSchedules);
+            
+            
+            //var daysOfWeek = ["Monday", "Tuesday", "Wednesday",
+            //                 "Thursday", "Friday", "Saturday", "Sunday"];
+            var firstDate = new Date(start);
+            //console.log(start);
+            //Make schedDisplay understandable to present to user
+            for(var scheds = 0; scheds < this.schedDisplay.length; scheds++){
+                var sc = new Array(this.tripL + 1);
+                for(var sd = 0; sd < this.tripL + 1; sd++){
+                    var activity = this.genSchedules[scheds][sd]
+                    //console.log(activity)
+                    if(activity != "No Tour"){
+                        //console.log(activity);
+                        activity = activity[0];
+                        //console.log(activity);
                     }
+                    //console.log(activity);
+                   
+                    //var day = daysOfWeek[dex];
+                    var date = new Date(start);
+                    date.setDate(firstDate.getDate()+sd + 1);
+                    //console.log(date.toString());
+                    sc[sd] = date + ": " + activity + "\n";
+                    //this.schedDisplay[scheds] += date + ": " + activity + "\n";
                 }
-
-            }*/
-
-            /*
-            var tourFound = false;
-            //q = day of the trip that you're on 
-            for(var q = 0; q < this.tripL+1; q++){
-                tourFound = false;
-                //Loop through each school that user wants to visit 
-                for(var d = 0; d < this.schedSchools.length; d++){
-                    //If the school in question has a tour on this day of the trip
-                    if(this.schedSchools[d].tours[counter] == 1 && tourFound == false){
-                        tp.push(q);
-                        tp.push(counter);
-                        tp.push(this.schedSchools[d].tours[counter]);
-                        tp.push(this.schedSchools[d].name);
-                        tourFound = true;
-                    }
-                }
-                if(tourFound == false){
-                    tp.push(q);
-                    tp.push(counter);
-                    tp.push('no school available');
-                }
-                if(counter == 6){
-                    counter = 0;
-                }else{
-                    counter += 1;
-                }
-            }*/
-            //console.log(tp);
-
-
-
+                this.schedDisplay[scheds] = sc;
+            }
+            //console.log(this.schedDisplay);
         },
+        
+        //move to viewing previous schedule
+        prevSch(sdex){
+            if(sdex == 0){
+                //console.log("HERE");
+                return;
+            }
+            //console.log(sdex);
+            this.schedDex = sdex - 1;
+        },
+        
+        //move to viewing next schedule
+        nextSch(sdex){
+            if(sdex == this.genSchedules.length-1){
+                return;
+            }
+            this.schedDex = sdex + 1;
+        
+        },
+        
+        //Click this to save the current schedule being viewed to user's trips object
+        favorite(currSched){
+            //console.log(this.startDate + 1);
+            console.log(currSched);
+            //Add user to the saved schedule
+            currSched.push(this.activeUser);
+            //Add a 0 or 1 for public vs. private
+            currSched.push(this.pubAccess);
+            
+            //Add this schedule to this user's trips
+            this.users[this.userIndex].trips.push(currSched);
+            console.log(this.users[this.userIndex].trips)
+            return;
+        },
+        
+        //Click this to go back to the createSchedule page to select new schools and new dates
+        newTrip(){
+            var viewSchedScreen = document.getElementById("schedViewContainer");
+            viewSchedScreen.style.display = "none";
+            
+            var createSchedScreen = document.getElementById("schedCreateContainer");
+            createSchedScreen.style.display = "block";
+        },
+        
 
+        //Helper function called in "createSchedule" method to 
+        //Check if the schedule generated has already been listed
+        singleSched(tripLength, numSchools){
+            var taken = [];
+            var sched = new Array(tripLength);
+            //Intialize schedule to "no tours" replaced later
+            for(var i =0; i<sched.length; i++){
+                    sched[i] = "No Tour";
+                }
+            
+            //Generate indices for schools to be placed into schedule
+            for(var s = 0; s<numSchools; s++){
+                var d = this.randNum(tripLength);
+                while(taken.indexOf(d) != -1){
+                    d = this.randNum(tripLength);
+                }
+                taken.push(d);
+                //sched[d] = this.schedSchools[s];
+                //console.log(this.schedSchools[s]);
+                sched[d] = [this.schedSchools[s].name, this.schedSchools[s].location[0], this.schedSchools[s].location[1]];
+            }
+            return sched;
+        },
+        
+        //Helper function to generate random numbers to assign schools to days of trip
+        randNum(upper){
+            return Math.floor(Math.random() * Math.floor(upper));
+        },
+        
         //Helper function to find number of days between dates selected
         //from https://www.htmlgoodies.com/html5/javascript/calculating-the-difference-between-two-dates-in-javascript.html
         tripLength(date1, date2){

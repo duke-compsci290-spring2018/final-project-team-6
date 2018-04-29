@@ -1,111 +1,116 @@
-    #finalapp {
-      font-family: 'Avenir', Helvetica, Arial, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      text-align: center;
-      color: #2c3e50;
-      margin-top: 60px;
-    }
+#finalapp {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}
 
-    h1, h2 {
-      text-align: center;
-    }
+#logout{
+    display: block;
+    float: right;
+}
 
-    .users_input{
-        display: block;
-        margin: auto;
-        width: 33%;
-        border: solid;
-    }
-    
+h1, h2 {
+  text-align: center;
+}
+
+.users_input{
+    display: block;
+    margin: auto;
+    width: 33%;
+    border: solid;
+}
+
 /*    //Align buttons*/
-    button{
-        margin-bottom: 15px;
-    }
+button{
+    margin-bottom: 15px;
+}
 
-    ul {
-      list-style-type: none;
-      padding: 0;
-    }
+ul {
+  list-style-type: none;
+  padding: 0;
+}
 
-    li {
-      display: inline-block;
-      margin: 0 10px;
-    }
+li {
+  display: inline-block;
+  margin: 0 10px;
+}
 
-    a {
-      color: #42b983;
-    }
+a {
+  color: #42b983;
+}
 
-    h3{
-        display: block;
-        text-align: center;
-    } 
+h3{
+    display: block;
+    text-align: center;
+} 
 /*    //Align sub-headings to the left*/
-    .sub1{
-        display: block;
-        text-align: left;
-        text-decoration: underline;
-    }
-    .header{
-        padding: 30px;
-    }
+.sub1{
+    display: block;
+    text-align: left;
+    text-decoration: underline;
+}
+.header{
+    padding: 30px;
+}
 /*    //Align div containing all date selector info*/
-    .date_select_div{
-        display: block;
-        padding-bottom: 20px;
-    }
-    
+.date_select_div{
+    display: block;
+    padding-bottom: 20px;
+}
+
 /*    //Align date selectors indented under their heading*/
-    #date_selectors{
-        display: block;
-        text-align: left;
-        padding-left: 5%;
-    }
-   
+#date_selectors{
+    display: block;
+    text-align: left;
+    padding-left: 5%;
+}
+
 /*    //Align school selector div*/
-    .schoolDropDown{
-        display: block;
-        padding-left: 5%;
-    }
+.schoolDropDown{
+    display: block;
+    padding-left: 5%;
+}
 /*    //Align selcted schools div*/
-    .your_schools{
-        display: block;
-        margin-top: -115px;
-    }
+.your_schools{
+    display: block;
+    margin-top: -115px;
+}
 /*    //Align schools selected display*/
-    #your_schools_title{
-        display: block;
-        text-decoration: underline;
-    }
-    
-    #your_schools_info{
-        display: block;
-    }
-    
+#your_schools_title{
+    display: block;
+    text-decoration: underline;
+}
+
+#your_schools_info{
+    display: block;
+}
+
 /*    //Display the current user*/
-    #currUser{
-        display: block;
-        text-align: right;
-        //margin-top: -70px;
-        //margin-left: 400px;
-    }
-    
+#currUser{
+    display: block;
+    text-align: right;
+    //margin-top: -70px;
+    //margin-left: 400px;
+}
+
 /*    //Align select input to the left*/
-    select{
-        display: block;
-        margin-left: 0px;
-        //margin-bottom: 100px;
-    }
-    
-    .public_private_div{
-        display: block;
-        margin-top: 100px;
-    }
-    
+select{
+    display: block;
+    margin-left: 0px;
+    //margin-bottom: 100px;
+}
+
+.public_private_div{
+    display: block;
+    margin-top: 100px;
+}
+
 /*    //Align public vs. private div box*/
-    .radioButtons{
-        display: block;
-        //margin-top: -40px;
-        margin-left: -400px;
-    }
+.radioButtons{
+    display: block;
+    //margin-top: -40px;
+    margin-left: -400px;
+}
