@@ -45,7 +45,7 @@
                 </div>
             </div>
             <br>
-            <button class="create_schedules" @click="createSchedule(mySchools, startDate, endDate,startZip)">Create Your Schedules!</button>
+            <button class="create_schedules" @click="createSchedule(mySchools, startDate, endDate, startZip)">Create Your Schedules!</button>
         </div>
         <hr>
         
@@ -88,8 +88,8 @@
                 mySchools: "", //In firebase must initialize to something
                 pubAccess: 1, //value 1 = private; value 0 = public (with radio buttons)
                 startZip: "",
-                schedSchools: "",
-                userIndex: -1,
+                schedSchools: "", //same as mySchools?
+                userIndex: -1, //To find user in usersArray to add trips to this user
                 tripL: 0
                 
             }
@@ -109,9 +109,9 @@
             startDateConvert(sDate){
                 console.log(sDate);
                 var sd = new Date(sDate);
-                console.log(sd);
+                //console.log(sd);
                 this.startDay = sd.getDay();
-                console.log(this.startDay);
+                //console.log(this.startDay);
                 return;
             },
             
@@ -215,20 +215,90 @@
                     }
                 }
                 
-                //Here, mySchoolsInfo contains school objects of all your selected schools
+                //Here, schedSchools and mySchoolsInfo contains school objects of all your selected schools
                 this.schedSchools = mySchoolsInfo;
-                console.log(this.schedSchools);
+                //console.log(this.schedSchools);
+                
                 var viewSchedScreen = document.getElementById("schedViewContainer");
                 viewSchedScreen.style.display = "block";
                 this.userIndex = userDex;
+                
                 //Loop through mySchoolsInfo and assign dates and times for all selected schools
                 //Add each schedule to thisUser.trips then add thisUser back into this.usersArray at "userDex" index
                 var counter = this.startDay;
-                var tp = [];
+                var fact = this.factorial(this.tripL+1 - this.schedSchools.length);//Factorial to multiply length by for permutations
+                //console.log("trip length: ", this.tripL + 1);
+                //console.log("schedSchools length: ", this.schedSchools.length);
+                //console.log("factorial calc: ", fact);
+                if(this.schedSchools.length == 1){
+                    var permutations = this.tripL + 1
+                }
+                if(this.schedSchools.length > 1){
+                    var permutations = this.factorial((this.tripL+1))/(fact);  
+                } 
+                console.log("permutations", permutations);
+                
+                //Array of trips length of trip 
+                //Add individual tps into allTrips array
+                var allTrips = new Array(permutations);
+                for(var i = 0; i < allTrips.length; i++){
+                    var trip = new Array(this.tripL + 1);
+                    for(var j = 0; j < trip.length; j++){
+                        trip[j] = "No Tour";
+                    }
+                    allTrips[i] = trip;
+                }
+                //console.log(permutations);
+                //console.log(allTrips.length);
+                //var tp = new Array(this.tripL+1);
+                var count = 0; 
+                for(var s = 0; s<this.schedSchools.length; s++){
+                    var count = 0;
+                    var timeThrough = 0;
+                    var sch = this.schedSchools[s];
+                    var dex = s-1
+                    for(var q = 0; q<permutations; q++){//loop through each possible trip
+                        dex += 1;
+                        if(dex >= (this.tripL + 1)){
+                            if(count >= this.tripL + 1){
+                                if(count % (this.tripL + 1) == 0){
+                                    timeThrough += 1;
+                                }
+                            dex = dex + (s*timeThrough);
+                            }
+                            //console.log("dex = ", dex);
+                            //console.log("length = ", (this.tripL + 1));
+                            dex = dex % (this.tripL + 1);
+                            //dex = (this.tripL)%(dex - (this.tripL + 1));
+                            //console.log("new dex = ", dex);
+                        }
+                        allTrips[q][dex] = sch.name;
+                        count += 1;
+                    }
+                    
+                    //console.log(allTrips);
+                }
+                console.log("AllTrips Array: ", allTrips);
+                /*
+                for(var q = 0; q < allTrips.length; q++){ //loop over all permutations of schedules
+                    var tp = new Array(this.tripL + 1); //each index represents day of the trip to visit a school
+                    for(var s = 0; s<this.schedSchools.length; s++){ //loop over all the schools that user wants to visit
+                        var sch = this.schedSchools[s];
+                        for(var d = 0; d<tp.length; d++){//add sch to diff days on the trip
+                            allTrips[q][d] = sch; //set the school to day d in tp q in allTrips
+                        }
+                    }
+                    
+                }*/
+                
+                /*
                 var tourFound = false;
+                //q = day of the trip that you're on 
                 for(var q = 0; q < this.tripL+1; q++){
                     tourFound = false;
+                    //Loop through each school that user wants to visit 
                     for(var d = 0; d < this.schedSchools.length; d++){
+                        //If the school in question has a tour on this day of the trip
                         if(this.schedSchools[d].tours[counter] == 1 && tourFound == false){
                             tp.push(q);
                             tp.push(counter);
@@ -236,7 +306,6 @@
                             tp.push(this.schedSchools[d].name);
                             tourFound = true;
                         }
-
                     }
                     if(tourFound == false){
                         tp.push(q);
@@ -248,8 +317,8 @@
                     }else{
                         counter += 1;
                     }
-                }
-                console.log(tp);
+                }*/
+                //console.log(tp);
                 
                 
                 
@@ -265,6 +334,19 @@
                 var date2_convert = date2.getTime();
                 var diff = date2_convert - date1_convert;
                 return Math.round(diff/day);
+            },
+            
+            //Helper function to calculate number of permutations of schedules to make 
+            factorial(number){
+                var res = number;
+                if(number == 0 || number == 1){
+                    return 1;
+                }
+                while(number > 1){
+                    number = number -1;
+                    res = res*number;
+                }
+                return res;
             }
         }
     }
