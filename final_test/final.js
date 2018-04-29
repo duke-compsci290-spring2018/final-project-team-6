@@ -98,6 +98,9 @@ var app = new Vue({
         genSchedules: "", //schedules generated for the user after clicking "create Schedule" button //Remember in firebase
         schedDisplay: "", //used to display genSchedules to user //Remember in firebase
         schedDex: 0, //used to loop through created schedules //Remember in firebase
+        newSchoolName: "",
+        newLat: "",
+        newLon: ""
     },
 
     methods: {
@@ -288,7 +291,7 @@ var app = new Vue({
 
         /*Function that creates schedules and moves to next component view 
         when clicked: check for valid input from user*/
-        createSchedule(schoolsList, start, end, zip){
+        createSchedule(schoolsList, start, end){
             //check that dates have been entered
             if(start == "" || end == ""){
                 alert("Please enter valid start and end dates")
@@ -463,6 +466,31 @@ var app = new Vue({
                 this.schedDisplay[scheds] = sc;
             }
             //console.log(this.schedDisplay);
+        },
+        
+        newSchool(name,lat,lon){
+            var latitude = parseFloat(lat);
+            var longitude = parseFloat(lon);
+            if(this.activeUser == "guest"){
+                alert('Guests cannot add schools. Please sign in or create an account!')
+                this.newSchoolName = "";
+                this.newLat = "";
+                this.newLon = "";
+            }else if((Math.abs(latitude) > 90) || (Math.abs(longitude) > 180)){
+                alert("Please enter valid school latitude and longitude values!");
+                this.newSchoolName = "";
+                this.newLat = "";
+                this.newLon = "";
+            }else{
+                this.schoolDat.schools.push({
+                    "name": name,
+                    "tours":[1,1,1,1,1,1,1],
+                    "location": [ latitude, longitude ]
+                });
+                this.newSchoolName = "";
+                this.newLat = "";
+                this.newLon = "";
+            }
         },
         
         //move to viewing previous schedule

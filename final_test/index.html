@@ -61,10 +61,6 @@
                             End Date: <input id="end_date" type="date" v-model="endDate" @change="endDateConvert(endDate)">
                         </p>
                     </div>
-                    <!--<div class="hometown col-12">
-                        <h4 class="sub1"> Enter Your Starting Zip Code</h4>
-                        <input class="sub1" id="zip_input" v-model="startZip" placeholder="Zip Code"><br>
-                    </div>-->
                     <div class="school_select_div col-12">
                         <h4 class="sub1">Select your schools: </h4>
                         <div class="schoolDropDown">
@@ -83,6 +79,14 @@
                             </p>
                         </div>
                     </div>
+                    <div class="new_school col-12">
+                        <h4 class="sub1">Don't see a school you want to visit? Add one!</h4>
+                        <p style="width: 50%" class="option1">Click <a href="https://www.google.com/maps" target="_blank">here</a> to search for your school's latitude and longitude. Just type in the school name, right click the map, and select the "what's here?" option to see to latitude and longitude!</p>
+                        <p class="option1">School Name: <input id="new_school" v-model="newSchoolName" placeholder="School Name"></p>
+                        <p class="option1">School Latitude: <input v-model="newLat" placeholder="Latitude">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+                        <p class="option1">School Longitude: <input v-model="newLon" placeholder="Longitude"></p>
+                        <button class="option1" @click="newSchool(newSchoolName,newLat,newLon)">Add your school!</button>
+                    </div>
                     <div class="public_private_div col-12">
                         <h4 class="sub1">Make Your Schedule:</h4>
                         <div class="radioButtons">
@@ -92,7 +96,7 @@
                         </div>
                     </div>
                     <br>
-                    <button class="create_schedules" @click="createSchedule(mySchools, startDate, endDate, startZip)">Create Your Schedules!</button>
+                    <button class="create_schedules" @click="createSchedule(mySchools, startDate, endDate)">Create Your Schedules!</button>
                 </div>
                 <hr>
 
@@ -137,25 +141,18 @@
                 <div id="schedDisp" v-for="day in schedDisplay[schedDex]" class="col-6">
                     {{day}}
                 </div>
+                <p style="text-align:center">Click <a href="google_map.html" target="_blank">here</a> to view a map of the schools you will be visiting!</p>
                 <button id="prevSched" @click="prevSch(schedDex)">prev</button>
                 <button id="nextSched" @click="nextSch(schedDex)">next</button>
                 <br>
                 <button id="fav" @click=favorite(schedDisplay[schedDex])>Save This Schedule!</button>
                 <br>
-                <button id="moreSched" @click="createSchedule(mySchools, startDate, endDate, startZip)">
+                <button id="moreSched" @click="createSchedule(mySchools, startDate, endDate)">
                     Want a different set of schedules?
                 </button> <br>
                 <button id="newSched" @click="newTrip()">Return to Plan Another Trip!</button>
             </div>
         </div> 
-<!--        <button id="mapButton" @click="showMap()">Click for map test</button>-->
-<!--
-        <div id="mapTest" style="display:none">
-            <googleMap
-                :name="example">
-            </googleMap>
-        </div>
--->
     </div>
 </body>
 </html>

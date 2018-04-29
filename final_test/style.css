@@ -7,6 +7,24 @@
   margin-top: 60px;
 }
 
+#gMap {
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
+}
+
+.option1{
+    display: block;
+    text-align: left;
+}
+
+.new_school{
+    display: block;
+    margin-top: 100px;
+}
+
 .your_trips{
     display: block;
     border: solid;
