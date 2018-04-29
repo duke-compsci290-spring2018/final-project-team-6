@@ -91,7 +91,7 @@ var app = new Vue({
         endDay: "", //Monday = 0... Sunday = 6; //Remember in firebase
         mySchools: "", //In firebase must initialize to something //Remember in firebase
         pubAccess: 1, //value 1 = private; value 0 = public (with radio buttons) //Remember in firebase
-        startZip: "", //Remember in firebase
+        //startZip: "", //Remember in firebase
         schedSchools: "", //same as mySchools? //Remember in firebase
         userIndex: 0, //To find user in users to add trips to this user //Remember in firebase
         tripL: 0, //Will be the length of the user's trip //Remember in firebase
@@ -223,7 +223,7 @@ var app = new Vue({
             this.startDay = "";
             this.endDay = "";
             this.mySchools = "";
-            this.startZip = "";
+            //this.startZip = "";
             this.pubAccess = 1;
             this.userIndex = 0;
             this.tripL = 0;
@@ -301,12 +301,13 @@ var app = new Vue({
             //Find length of trip to make sure you have enough days for schools selected
             this.tripL = this.tripLength(sd, ed);
 
+            /*
             //check for valid zip code
             if(zip.length != 5){
                 alert("Please enter a valid zip code");
                 this.startZip = "";
                 return;
-            }
+            }*/
 
             //check that user is logged in
             if(this.activeUser == "guest"){
