@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- always put your name in your work -->
+    <meta name="author" content="Daniel Bernt and Ryan Bloom">
+    <!-- stop the web browser from ever caching this page or its images -->
+    <meta http-equiv="Cache-Control" content="no-cache" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <!-- libraries neded for this page -->
+    <script src="https://www.gstatic.com/firebasejs/4.11.0/firebase.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vuefire/1.4.5/vuefire.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <!-- support for this page -->
+    <link rel="stylesheet" href="style.css">
+    <script src="final.js" async></script>
+    <title>Final App</title>
+</head>
+<body>
+    <div id="finalapp">
+        <div id="start_page_div">
+            <h1>Welcome to College ConnecTour!</h1> <br>
+            <!--Sign in inputs for users that are already members-->
+            <div class="users_input" id="returning_sign_in">
+                <h3>Existing User Sign-In:</h3>
+                <input id="return_username_input" v-model="returnUsername" placeholder="Username"><br>
+                <input id="return_password_input" type="password" v-model="returnPassword" placeholder="Password"><br>
+                <button id="sign_in" @click="signIn(returnUsername, returnPassword)">Sign-In!</button>
+            </div>
+            <!--Sign up inputs for users that want to be members-->
+            <div class="users_input" id="new_user_create">
+                <h3>New User Sign-Up:</h3>
+                <input id="new_username_input" v-model="newUsername" placeholder="New Username"><br>
+                <input id="new_password_input" type="password" v-model="newPassword" placeholder="Input Password"><br>
+                <input id="confirm_password_input" type="password" v-model="confirmPassword" placeholder="Confirm Password"><br>
+                <button id="sign_up" @click="signUp(newUsername, newPassword, confirmPassword)">Sign-Up!</button>
+            </div>
+            <!--If a user wishes to not be a member, they can continue as guest-->
+            <div class="users_input" id="guest_access">
+                <h3>Don't want to be a user?</h3>
+                <button id="guest_button" @click="guestAccess()">Continue as Guest!</button>
+            </div>
+        </div>
+        <div id="schedCreateContainer" style="display:none">
+            <div id="create_schedule_page">
+                <div class="header">
+                    <h1>College ConnecTour</h1>
+                    <p id="currUser">User: {{activeUser}}</p>
+                </div>
+                <hr>
+                <div id="schedule_creator">
+                    <h3>Plan Your Trip!</h3>
+                    <div class="date_select_div col-12">
+                        <h4 class="sub1">Select your dates: </h4>
+                        <p id="date_selectors">
+                            Start Date: <input id="start_date" type="date" v-model="startDate" @change="startDateConvert(startDate)"> 
+                            End Date: <input id="end_date" type="date" v-model="endDate" @change="endDateConvert(endDate)">
+                        </p>
+                    </div>
+                    <div class="hometown col-12">
+                        <h4 class="sub1"> Enter Your Starting Zip Code</h4>
+                        <input class="sub1" id="zip_input" v-model="startZip" placeholder="Zip Code"><br>
+                    </div>
+                    <div class="school_select_div col-12">
+                        <h4 class="sub1">Select your schools: </h4>
+                        <div class="schoolDropDown">
+                            <select multiple class="school_selector_input">
+                                <option disabled value="">Select Your Schools!</option>
+                                <option class="schoolSelectOption" v-for="school in schoolDat.schools" value=school @click="addSchool(school.name)">
+                                    {{school.name}}
+                                </option>    
+                            </select>
+                        </div>
+                        <div class="your_schools">
+                            <h4 id="your_schools_title">Your Selected Schools:</h4>
+                            <p id="your_schools_info" v-for="name in mySchools">
+                                <button class="remove_school" @click="remove(name)">&#x2718</button>
+                                {{name}}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="public_private_div col-12">
+                        <h4 class="sub1">Make Your Schedule:</h4>
+                        <div class="radioButtons">
+                            <input class="pubRadio" type="radio" name="pubOrPriv" value=0 v-model ="pubAccess"> Public?
+                            <br>
+                            <input class="pubRadio" type="radio" name="pubOrPriv" value=1 v-model ="pubAccess" selected = true> Private?
+                        </div>
+                    </div>
+                    <br>
+                    <button class="create_schedules" @click="createSchedule(mySchools, startDate, endDate, startZip)">Create Your Schedules!</button>
+                </div>
+                <hr>
+
+                <div id="user_schedules">
+                    <h3>View Your Schedules!</h3>
+                    <hr>
+                </div>
+
+                <div id="public_schedules">
+                    <h3>View Others' Schedules!</h3>
+                </div>
+                <div id="schedViewContainer" style="display:none">
+                    <div class="header">
+                        <h1>College ConnecTour</h1>
+                        <p id="currUser">User: {{activeUser}}</p>
+                    </div>
+                    <hr>
+                </div>
+            </div>
+        </div> 
+<!--        <button id="mapButton" @click="showMap()">Click for map test</button>-->
+<!--
+        <div id="mapTest" style="display:none">
+            <googleMap
+                :name="example">
+            </googleMap>
+        </div>
+-->
+    </div>
+</body>
+</html>
