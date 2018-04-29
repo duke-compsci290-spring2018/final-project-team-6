@@ -87,6 +87,19 @@
                         <p class="option1">School Longitude: <input v-model="newLon" placeholder="Longitude"></p>
                         <button class="option1" @click="newSchool(newSchoolName,newLat,newLon)">Add your school!</button>
                     </div>
+                    <div class="col-12" id="admin_check" style="display:none">
+                        <h4 class="sub1">Edit User-Entered Data (for Admin only)</h4>
+                        <p class="option1">If a user has entered an incorrect/joke school name, click it from the list below to remove it from the site's data.</p>
+                        <div class="schoolDropDown">
+                            <select class="school_selector_input" id="chooseSchool" v-model = "schoolRemove">
+                                <option disabled value="">Edit Schools</option>
+                                <option class="schoolSelectOption" v-for="school in schoolDat.schools">
+                                    {{school.name}}
+                                </option>  
+                            </select>
+                            <button class="options1" @click="editSchool(schoolRemove)">Remove Selected School</button>
+                        </div>
+                    </div>
                     <div class="public_private_div col-12">
                         <h4 class="sub1">Make Your Schedule:</h4>
                         <div class="radioButtons">
@@ -138,7 +151,7 @@
             <hr>
             <div id="scheduleView" class="col-12">
                 <h3 id="scheduleViewLeft">Schedule number: {{schedDex+1}} of {{schedDisplay.length}}</h3>
-                <div id="schedDisp" v-for="day in schedDisplay[schedDex]" class="col-6">
+                <div id="schedDisp" v-for="day in schedDisplay[schedDex]" class="col-12">
                     {{day}}
                 </div>
                 <p style="text-align:center">Click <a href="google_map.html" target="_blank">here</a> to view a map of the schools you will be visiting!</p>

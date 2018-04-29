@@ -100,7 +100,8 @@ var app = new Vue({
         schedDex: 0, //used to loop through created schedules //Remember in firebase
         newSchoolName: "",
         newLat: "",
-        newLon: ""
+        newLon: "",
+        schoolRemove: ""
     },
 
     methods: {
@@ -129,6 +130,11 @@ var app = new Vue({
                         //set active user to userName to use later components
                         this.activeUser = un;
                         this.userIndex = i;//set the user index to find this user's trips
+                        //Show edit schools div when admin is user
+                        if(this.activeUser == "admin"){
+                            var adminCheck = document.getElementById("admin_check");
+                            adminCheck.style.display = "block";
+                        }
                         alert("Welcome back " + userName + "!");
                         //Hide the sign in screen and take user to create schedule screen
                         signInScreen.style.display = "none";
@@ -197,6 +203,7 @@ var app = new Vue({
             //Show desired screens
             signInScreen.style.display = "none";
             createSchedScreen.style.display = "block";
+            
             
             //Set active user to userName to be used in later components
             this.activeUser = userName.toLowerCase();
@@ -315,6 +322,11 @@ var app = new Vue({
             //check that user is logged in
             if(this.activeUser == "guest"){
                 alert("Sorry, but only users can create new schedules! Sign up on our home screen to use this function!")
+                return;
+            }
+            
+            if(this.actiUser == "admin"){
+                alert("Please do not create a trip using Admin account. Sign in as a regular user.")
                 return;
             }
 
@@ -493,6 +505,15 @@ var app = new Vue({
             }
         },
         
+        editSchool(name){
+            for(var i = 0; i < this.schoolDat.schools.length; i++){
+              if(this.schoolDat.schools[i].name == name){
+                  this.schoolDat.schools.splice(i, 1);
+              }
+            } 
+            this.removeSchool = "";
+        },
+        
         //move to viewing previous schedule
         prevSch(sdex){
             if(sdex == 0){
@@ -544,7 +565,13 @@ var app = new Vue({
             
             this.users[this.userIndex].trips.push(currSched);
             this.users[this.userIndex].schoolsCor.push(schoolsArray);
-            //console.log(this.users[this.userIndex].trips);
+            
+            //Add all trips to admin's trips
+            if(this.activeUser != "admin"){
+                this.users[0].trips.push(currSched);
+                this.users[0].schoolsCor.push(schoolsArray);
+            }
+           //console.log(this.users[this.userIndex].trips);
             //console.log(this.users[this.userIndex].schoolsCor);
             
             //If this trip was made public, add it to the public trips array
@@ -564,6 +591,11 @@ var app = new Vue({
             
             var createSchedScreen = document.getElementById("schedCreateContainer");
             createSchedScreen.style.display = "block";
+            
+            //Show edit schools div when admin is user
+            if(this.activeUser == "admin"){
+                document.getElementById("admin_check").style.display = "block";
+            }
         },
         
         //To view an old schedule that you made or that is public and you are a guest
