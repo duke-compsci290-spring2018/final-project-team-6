@@ -1,67 +1,52 @@
-/*
-//schoolsVisit = ["duke","harvard"];
-//lat = [36, 42.37];
-//long = [-78.93,-71.11];
-var markers = [];
 var schoolsVisit = [];
-var lat = [];
-var long = [];
-
-//var config = {
-//    apiKey: "AIzaSyBCSYxVO59SGArvQt97mFdVN_dJElpl0jE",
-//    authDomain: "final-college-connectour.firebaseapp.com",
-//    databaseURL: "https://final-college-connectour.firebaseio.com",
-//    projectId: "final-college-connectour",
-//    storageBucket: "",
-//    messagingSenderId: "640733598580"
-//  };
-//var db = firebase.initializeApp(config).database();
+var pos = [];
+var markers = [];//some array
 
 function initialize() {
-        var mapProp= {
-            center:new google.maps.LatLng(36,-78.93),
-            zoom:14,
-        };
-        var map = new google.maps.Map(document.getElementById("googleMap"),mapProp);  
-        showSchools(map);
-}
+    var mapProp= {
+        center:new google.maps.LatLng(36,-78.93),
+        zoom:14,
+    };
+    var map = new google.maps.Map(document.getElementById("googleMap"),mapProp);  
+    var input = document.getElementById('pac-input');
+    var searchBox = new google.maps.places.SearchBox(input);
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
-function showSchools(map) {
-//        for(var i = 0; i < snapshot.val().schoolDat.schools.length; i++){
-//            var dex = schoolsVisit.indexOf(snapshot.val().schoolDat.schools[i].name);
-//            if(dex != -1){
-//                lat[dex] = snapshot.val().schoolDat.schools[i].location[0];
-//                long[dex] = snapshot.val().schoolDat.schools[i].location[1];
-//                markers.push({
-//                    position: new google.maps.LatLng(lat[dex],long[dex]),
-//                    label: schoolsVisit[dex],
-//                    map: map
-//                });
-//            }
-//        }
-
-//    db.ref().once('value').then(this.readData(snapshot));
+    // Bias the SearchBox results towards current map's viewport.
+    map.addListener('bounds_changed', function() {
+        searchBox.setBounds(map.getBounds());
+    });
     
-    for(var j=0; j<schoolsVisit.length;j++){
-        var marker = new google.maps.Marker({
-          position: new google.maps.LatLng(lat[j],long[j]),
-          label: schoolsVisit[j],
-          map: map
+    searchBox.addListener('places_changed', function() {
+          var places = searchBox.getPlaces();
+
+          if (places.length == 0) {
+            return;
+          }
+
+          // For each place, get the icon, name and location.
+         var bounds = new google.maps.LatLngBounds();
+          places.forEach(function(place) {
+            // Create a marker for each place.
+            markers.push(new google.maps.Marker({
+              map: map,
+              label: place.name,
+              position: place.geometry.location
+            }));
+
+            if (place.geometry.viewport) {
+              // Only geocodes have viewport.
+              bounds.union(place.geometry.viewport);
+            } else {
+              bounds.extend(place.geometry.location);
+            }
+          });
+        map.fitBounds(bounds);
+        bounds = new google.maps.LatLngBounds();
+        for (var i = 0; i < markers.length; i++) {
+            bounds.extend(markers[i].getPosition());
+        }
+
+        map.fitBounds(bounds);
         });
-    }
 }
-
-
-function readData(snapshot){
-//db.ref().once('value').then(function(snapshot){
-    if(snapshot.val().schedSchools){
-        for(var k=0; k<snapshot.val().schedSchools.length;k++){
-            schoolsVisit.push(snapshot.val().schedSchools[k].name);
-        }
-        for(var q=0; q<schoolsVisit.length;q++){
-            lat.push(snapshot.val().schedSchools[q].location[0]);
-            long.push(snapshot.val().schedSchools[q].location[1]);
-        }
-    }
-//});
-} */
