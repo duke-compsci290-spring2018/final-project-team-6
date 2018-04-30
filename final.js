@@ -924,7 +924,7 @@ var app = new Vue({
         
         //To view an old schedule that you made or that is public and you are a guest
         viewOldSched(dex, oldTrips){
-            console.log(oldTrips);
+            //console.log(oldTrips);
             //var signInScreen = document.getElementById("start_page_div");
             var createSchedScreen = document.getElementById("schedCreateContainer");
             var viewSchedScreen = document.getElementById("schedViewContainer");
