@@ -54,7 +54,130 @@ var schoolJSON = {
     ]
 };
 
+// Initialize Firebase
+var config = {
+    apiKey: "AIzaSyBCSYxVO59SGArvQt97mFdVN_dJElpl0jE",
+    authDomain: "final-college-connectour.firebaseapp.com",
+    databaseURL: "https://final-college-connectour.firebaseio.com",
+    projectId: "final-college-connectour",
+    storageBucket: "",
+    messagingSenderId: "640733598580"
+  };
+var db = firebase.initializeApp(config).database();
+Vue.use(VueFire);
+
+
+
 var app = new Vue({
+    created: function(){
+        var curr = this;
+        function readData(snapshot){
+            var data = snapshot.val();
+            if(data){
+                if("users" in data){
+                    if(!("trips" in data.users[0])){
+                        data.users[0].trips = [];
+                    }
+                    if(!("schoolsCor" in data.users[0])){
+                        data.users[0].schoolsCor = [];
+                    }
+                    if(!("trips" in data.users[0])){
+                        data.users[1].trips = [];
+                    }
+                    if(!("schoolsCor" in data.users[0])){
+                        data.users[1].schoolsCor = [];
+                    }
+                    curr.users[0] = data.users[0];
+                    curr.users[1] = data.users[1];
+                    for(i = 2; i<data.users.length; i++){
+                        //order of curr.users.push might be different
+                        if(!("trips" in data.users[i])){
+                            data.users[i].trips = [];
+                        }
+                        if(!("schoolsCor" in data.users[i])){
+                            data.users[i].schoolsCor = [];
+                        }
+                        curr.users.push(data.users[i]);
+                    }
+                }
+                
+                if("signInDisp" in data){
+                    curr.signInDisp = data.signInDisp;
+                    var signInScreen = document.getElementById("start_page_div");
+                    signInScreen.style.display = curr.signInDisp;
+                }
+                if("createSchedDisp" in data){
+                    curr.createSchedDisp = data.createSchedDisp;
+                    var createSchedScreen = document.getElementById("schedCreateContainer");
+                    createSchedScreen.style.display = curr.createSchedDisp;
+                }
+                if("viewSchedDisp" in data){
+                    curr.viewSchedDisp = data.viewSchedDisp;
+                    var viewSchedScreen = document.getElementById("schedViewContainer");
+                    viewSchedScreen.style.display = curr.viewSchedDisp;
+                } 
+                
+                if("userIndex" in data){
+                    curr.userIndex = data.userIndex;
+                }
+                if("activeUser" in data){
+                    curr.activeUser = data.activeUser;
+                }
+                /*
+                if(!("publicTrips" in data)){
+                    data.publicTrips = [];
+                }*/
+                if("publicTrips" in data){
+                    for(i = 0; i<data.publicTrips.length; i++){
+                        curr.publicTrips.push(data.publicTrips[i]);
+                    }
+                }
+                /*
+                if(!("pubSchools" in data)){
+                    data.pubSchools = []; 
+                }
+                */
+                if("pubSchools" in data){
+                    for(i=0; i<data.pubSchools.length; i++){
+                        curr.pubSchools.push(data.pubSchools[i]);
+                    }
+                }
+                
+                /*
+                if(!("schoolDat" in data)){
+                    data.schoolDat = {"schools":[]};
+                }
+                */
+                
+                if("schoolDat" in data){
+                    //CHANGE THE i START INDEX IF ADD MORE SCHOOLS
+                    for(i=10; i<data.schoolDat.schools.length; i++){
+                        curr.schoolDat.schools.push(data.schoolDat.schools[i]);
+                    }
+                }
+                if("schedDex" in data){
+                    curr.schedDex = data.schedDex;
+                }
+                /*
+                if(!("schedSchools" in data)){
+                    data.schedSchools = [];
+                }
+                */
+                if("schedSchools" in data){
+                    for(i = 0; i<data.schedSchools.length; i++){
+                        curr.schedSchools.push(data.schedSchools[i]);
+                    }
+                }
+                if("schedDisplay" in data){
+                    for(i = 0; i<data.schedDisplay.length; i++){
+                        curr.schedDisplay.push(data.schedDisplay[i]);
+                    }
+                }
+            }
+            db.ref("/").off("value", readData);
+        }
+        db.ref("/").on("value", readData);
+    },
     data: {
         //Temporary data objects referenced with v-models in html
         returnUsername: "",
@@ -92,19 +215,25 @@ var app = new Vue({
         mySchools: "", //In firebase must initialize to something //Remember in firebase
         pubAccess: 1, //value 1 = private; value 0 = public (with radio buttons) //Remember in firebase
         //startZip: "", //Remember in firebase
-        schedSchools: "", //same as mySchools? //Remember in firebase
+        schedSchools: [], //same as mySchools? //Remember in firebase
         userIndex: 0, //To find user in users to add trips to this user //Remember in firebase
         tripL: 0, //Will be the length of the user's trip //Remember in firebase
         genSchedules: "", //schedules generated for the user after clicking "create Schedule" button //Remember in firebase
-        schedDisplay: "", //used to display genSchedules to user //Remember in firebase
+        schedDisplay: [], //used to display genSchedules to user //Remember in firebase
         schedDex: 0, //used to loop through created schedules //Remember in firebase
         newSchoolName: "",
         newLat: "",
         newLon: "",
-        schoolRemove: ""
+        schoolRemove: "",
+        signInDisp: "block",
+        createSchedDisp: "none",
+        viewSchedDisp: "none"
     },
 
     methods: {
+        updateDatabase(fbObject, data){
+            db.ref("/" + fbObject).set(data);
+        },
         signIn(userName, userPassword){
             var i = 0;
             var signInScreen = document.getElementById("start_page_div");
@@ -131,16 +260,44 @@ var app = new Vue({
                         this.activeUser = un;
                         this.userIndex = i;//set the user index to find this user's trips
                         //Show edit schools div when admin is user
-                        if(this.activeUser == "admin"){
+                        
+                        /*if(this.activeUser == "admin"){
                             var adminCheck = document.getElementById("admin_check");
                             adminCheck.style.display = "block";
+                        }*/
+                        
+                        if(this.activeUser == "admin"){
+                            document.getElementById("admin_check").style.display = "block";
+                        }
+                        if(this.activeUser != "admin"){
+                            document.getElementById("admin_check").style.display = "none";
                         }
                         alert("Welcome back " + userName + "!");
                         //Hide the sign in screen and take user to create schedule screen
                         signInScreen.style.display = "none";
+                        this.signInDisp = "none";
                         createSchedScreen.style.display = "block";
+                        this.createSchedDisp = "block";
+                        
+                        
                         this.returnUsername = "";
                         this.returnPassword = "";
+                        
+                        this.updateDatabase("users", this.users);
+                        this.updateDatabase("userIndex", this.userIndex);
+                        this.updateDatabase("activeUser", this.activeUser);
+                        this.updateDatabase("publicTrips", this.publicTrips);
+                        this.updateDatabase("pubSchools", this.pubSchools);
+                        this.updateDatabase("schoolDat", this.schoolDat);
+                        this.updateDatabase("schedDex", this.schedDex);
+                        this.updateDatabase("schedDisplay", this.schedDisplay);
+                        
+                        
+                        this.updateDatabase("signInDisp", this.signInDisp);
+                        this.updateDatabase("createSchedDisp", this.createSchedDisp);
+                        this.updateDatabase("viewSchedDisp", this.viewSchedDisp);
+                        
+                        
                         return;
                     }
                 }
@@ -198,11 +355,15 @@ var app = new Vue({
             })
             
             this.userIndex = this.users.length-1;
-            //console.log(this.users)
+            
+            
+            document.getElementById("admin_check").style.display = "none";
             
             //Show desired screens
             signInScreen.style.display = "none";
+            this.signInDisp = "none";
             createSchedScreen.style.display = "block";
+            this.createSchedDisp = "block";
             
             
             //Set active user to userName to be used in later components
@@ -210,6 +371,23 @@ var app = new Vue({
             this.newUsername = "";
             this.newPassword = "";
             this.confirmPassword = "";
+            
+            //Update firebase
+            this.updateDatabase("users", this.users);
+            this.updateDatabase("userIndex", this.userIndex);
+            this.updateDatabase("activeUser", this.activeUser);
+            this.updateDatabase("publicTrips", this.publicTrips);
+            this.updateDatabase("pubSchools", this.pubSchools);
+            this.updateDatabase("schoolDat", this.schoolDat);
+            this.updateDatabase("schedDex", this.schedDex);
+            this.updateDatabase("schedDisplay", this.schedDisplay);
+
+        
+            this.updateDatabase("signInDisp", this.signInDisp);
+            this.updateDatabase("createSchedDisp", this.createSchedDisp);
+            this.updateDatabase("viewSchedDisp", this.viewSchedDisp);
+            
+            
             return;
         },
         guestAccess(){
@@ -220,7 +398,28 @@ var app = new Vue({
             
             //Display the desired screens
             signInScreen.style.display = "none";
+            this.signInDisp = "none";
             createSchedScreen.style.display = "block";
+            this.createSchedDisp = "block";
+            
+            document.getElementById("admin_check").style.display = "none";
+            
+            
+            //Update firebase
+            this.updateDatabase("users", this.users);
+            this.updateDatabase("userIndex", this.userIndex);
+            this.updateDatabase("activeUser", this.activeUser);
+            this.updateDatabase("publicTrips", this.publicTrips);
+            this.updateDatabase("pubSchools", this.pubSchools);
+            this.updateDatabase("schoolDat", this.schoolDat);
+            this.updateDatabase("schedDex", this.schedDex);
+            this.updateDatabase("schedDisplay", this.schedDisplay);
+
+            
+            this.updateDatabase("signInDisp", this.signInDisp);
+            this.updateDatabase("createSchedDisp", this.createSchedDisp);
+            this.updateDatabase("viewSchedDisp", this.viewSchedDisp);
+            
             return;
         },  
         
@@ -237,10 +436,10 @@ var app = new Vue({
             this.pubAccess = 1;
             this.userIndex = 0;
             this.tripL = 0;
-            this.schedSchools = "";
+            this.schedSchools = [];
             this.schedDex = 0;
             this.genSchedules = "";
-            this.schedDisplay = "";
+            this.schedDisplay = [];
             
             
             //Display sign-in screen but neither of other two
@@ -249,10 +448,29 @@ var app = new Vue({
             var viewSchedScreen = document.getElementById("schedViewContainer");
 
             signInScreen.style.display = "block";
+            this.signInDisp = "block";
             createSchedScreen.style.display = "none";
+            this.createSchedDisp = "none";
             viewSchedScreen.style.display = "none";
+            this.viewSchedDisp = "none";
+            
+            //Update firebase
+            this.updateDatabase("users", this.users);
+            this.updateDatabase("userIndex", this.userIndex);
+            this.updateDatabase("activeUser", this.activeUser);
+            this.updateDatabase("publicTrips", this.publicTrips);
+            this.updateDatabase("pubSchools", this.pubSchools);
+            this.updateDatabase("schoolDat", this.schoolDat);
+            this.updateDatabase("schedDex", this.schedDex);
+            this.updateDatabase("schedDisplay", this.schedDisplay);
+
+        
+            this.updateDatabase("signInDisp", this.signInDisp);
+            this.updateDatabase("createSchedDisp", this.createSchedDisp);
+            this.updateDatabase("viewSchedDisp", this.viewSchedDisp);
             
         },
+        
         /*Turns the start date into an integer (0-6)
         representing day of the week to use in JSON file*/
         //Dont think we need to use this at all anymore
@@ -311,22 +529,14 @@ var app = new Vue({
             //Find length of trip to make sure you have enough days for schools selected
             this.tripL = this.tripLength(sd, ed);
 
-            /*
-            //check for valid zip code
-            if(zip.length != 5){
-                alert("Please enter a valid zip code");
-                this.startZip = "";
-                return;
-            }*/
-
             //check that user is logged in
             if(this.activeUser == "guest"){
                 alert("Sorry, but only users can create new schedules! Sign up on our home screen to use this function!")
                 return;
             }
             
-            if(this.actiUser == "admin"){
-                alert("Please do not create a trip using Admin account. Sign in as a regular user.")
+            if(this.activeUser == "admin"){
+                alert("Please do not create a trip using Admin account. Log out and sign back in as a regular user.")
                 return;
             }
 
@@ -389,17 +599,17 @@ var app = new Vue({
             
             var createSchedScreen = document.getElementById("schedCreateContainer");
             createSchedScreen.style.display = "none";
+            this.createSchedDisp = "none";
             
             var viewSchedScreen = document.getElementById("schedViewContainer");
             viewSchedScreen.style.display = "block";
+            this.viewSchedDisp = "block";
             this.userIndex = userDex;
 
             //Loop through mySchoolsInfo and assign dates and times for all selected schools
             //Add each schedule to thisUser.trips then add thisUser back into this.users at "userDex" index
-            var counter = this.startDay;
             var fact = this.factorial(this.tripL+1 - this.schedSchools.length);//Factorial to multiply length by for permutations
 
-//REMOVED CONSOLE.LOG THINGS HERE
             var permutations = 0;
             if(this.schedSchools.length == 1){
                 permutations = this.tripL + 1;
@@ -477,9 +687,25 @@ var app = new Vue({
                 }
                 this.schedDisplay[scheds] = sc;
             }
-            //console.log(this.schedDisplay);
+            
+            //Update firebase
+            this.updateDatabase("users", this.users);
+            this.updateDatabase("userIndex", this.userIndex);
+            this.updateDatabase("activeUser", this.activeUser);
+            this.updateDatabase("publicTrips", this.publicTrips);
+            this.updateDatabase("pubSchools", this.pubSchools);
+            this.updateDatabase("schoolDat", this.schoolDat);
+            this.updateDatabase("schedDex", this.schedDex);
+            this.updateDatabase("schedDisplay", this.schedDisplay);
+
+            
+            this.updateDatabase("signInDisp", this.signInDisp);
+            this.updateDatabase("createSchedDisp", this.createSchedDisp);
+            this.updateDatabase("viewSchedDisp", this.viewSchedDisp);
+            
         },
         
+        //Add new school to the database if you can't find your school
         newSchool(name,lat,lon){
             var latitude = parseFloat(lat);
             var longitude = parseFloat(lon);
@@ -503,6 +729,22 @@ var app = new Vue({
                 this.newLat = "";
                 this.newLon = "";
             }
+            
+            //Update firebase
+            this.updateDatabase("users", this.users);
+            this.updateDatabase("userIndex", this.userIndex);
+            this.updateDatabase("activeUser", this.activeUser);
+            this.updateDatabase("publicTrips", this.publicTrips);
+            this.updateDatabase("pubSchools", this.pubSchools);
+            this.updateDatabase("schoolDat", this.schoolDat);
+            this.updateDatabase("schedDex", this.schedDex);
+            this.updateDatabase("schedDisplay", this.schedDisplay);
+
+            
+            this.updateDatabase("signInDisp", this.signInDisp);
+            this.updateDatabase("createSchedDisp", this.createSchedDisp);
+            this.updateDatabase("viewSchedDisp", this.viewSchedDisp);
+            
         },
         
         editSchool(name){
@@ -512,6 +754,22 @@ var app = new Vue({
               }
             } 
             this.removeSchool = "";
+            
+            //Update firebase
+            this.updateDatabase("users", this.users);
+            this.updateDatabase("userIndex", this.userIndex);
+            this.updateDatabase("activeUser", this.activeUser);
+            this.updateDatabase("publicTrips", this.publicTrips);
+            this.updateDatabase("pubSchools", this.pubSchools);
+            this.updateDatabase("schoolDat", this.schoolDat);
+            this.updateDatabase("schedDex", this.schedDex);
+            this.updateDatabase("schedDisplay", this.schedDisplay);
+
+            
+            this.updateDatabase("signInDisp", this.signInDisp);
+            this.updateDatabase("createSchedDisp", this.createSchedDisp);
+            this.updateDatabase("viewSchedDisp", this.viewSchedDisp);
+            
         },
         
         //move to viewing previous schedule
@@ -522,6 +780,22 @@ var app = new Vue({
             }
             //console.log(sdex);
             this.schedDex = sdex - 1;
+            
+            //Update firebase
+            this.updateDatabase("users", this.users);
+            this.updateDatabase("userIndex", this.userIndex);
+            this.updateDatabase("activeUser", this.activeUser);
+            this.updateDatabase("publicTrips", this.publicTrips);
+            this.updateDatabase("pubSchools", this.pubSchools);
+            this.updateDatabase("schoolDat", this.schoolDat);
+            this.updateDatabase("schedDex", this.schedDex);
+            this.updateDatabase("schedDisplay", this.schedDisplay);
+
+            
+            this.updateDatabase("signInDisp", this.signInDisp);
+            this.updateDatabase("createSchedDisp", this.createSchedDisp);
+            this.updateDatabase("viewSchedDisp", this.viewSchedDisp);
+            
         },
         
         //move to viewing next schedule
@@ -530,7 +804,22 @@ var app = new Vue({
                 return;
             }
             this.schedDex = sdex + 1;
-        
+            
+            //Update firebase
+            this.updateDatabase("users", this.users);
+            this.updateDatabase("userIndex", this.userIndex);
+            this.updateDatabase("activeUser", this.activeUser);
+            this.updateDatabase("publicTrips", this.publicTrips);
+            this.updateDatabase("pubSchools", this.pubSchools);
+            this.updateDatabase("schoolDat", this.schoolDat);
+            this.updateDatabase("schedDex", this.schedDex);
+            this.updateDatabase("schedDisplay", this.schedDisplay);
+
+            
+            this.updateDatabase("signInDisp", this.signInDisp);
+            this.updateDatabase("createSchedDisp", this.createSchedDisp);
+            this.updateDatabase("viewSchedDisp", this.viewSchedDisp);
+            
         },
         
         //Click this to save the current schedule being viewed to user's trips object
@@ -571,16 +860,30 @@ var app = new Vue({
                 this.users[0].trips.push(currSched);
                 this.users[0].schoolsCor.push(schoolsArray);
             }
-           //console.log(this.users[this.userIndex].trips);
-            //console.log(this.users[this.userIndex].schoolsCor);
-            
+
             //If this trip was made public, add it to the public trips array
             if(this.pubAccess == 0){
                 //Don't need to include the final element because that tells public or private
-                this.publicTrips.push(currSched.slice(0,this.tripL+1));
+                this.publicTrips.push(currSched);//.slice(0,this.tripL+1));
                 this.pubSchools.push(schoolsArray);
             }
             //console.log(this.publicTrips);
+            
+            //Update firebase
+            this.updateDatabase("users", this.users);
+            this.updateDatabase("userIndex", this.userIndex);
+            this.updateDatabase("activeUser", this.activeUser);
+            this.updateDatabase("publicTrips", this.publicTrips);
+            this.updateDatabase("pubSchools", this.pubSchools);
+            this.updateDatabase("schoolDat", this.schoolDat);
+            this.updateDatabase("schedDex", this.schedDex);
+            this.updateDatabase("schedDisplay", this.schedDisplay);
+
+            
+            this.updateDatabase("signInDisp", this.signInDisp);
+            this.updateDatabase("createSchedDisp", this.createSchedDisp);
+            this.updateDatabase("viewSchedDisp", this.viewSchedDisp);
+            
             return;
         },
         
@@ -588,14 +891,35 @@ var app = new Vue({
         newTrip(){
             var viewSchedScreen = document.getElementById("schedViewContainer");
             viewSchedScreen.style.display = "none";
+            this.viewSchedDisp = "none";
             
             var createSchedScreen = document.getElementById("schedCreateContainer");
             createSchedScreen.style.display = "block";
+            this.createSchedDisp = "block";
             
             //Show edit schools div when admin is user
             if(this.activeUser == "admin"){
                 document.getElementById("admin_check").style.display = "block";
             }
+            if(this.activeUser != "admin"){
+                document.getElementById("admin_check").style.display = "none";
+            }
+            
+            //Update firebase
+            this.updateDatabase("users", this.users);
+            this.updateDatabase("userIndex", this.userIndex);
+            this.updateDatabase("activeUser", this.activeUser);
+            this.updateDatabase("publicTrips", this.publicTrips);
+            this.updateDatabase("pubSchools", this.pubSchools);
+            this.updateDatabase("schoolDat", this.schoolDat);
+            this.updateDatabase("schedDex", this.schedDex);
+            this.updateDatabase("schedDisplay", this.schedDisplay);
+
+            
+            this.updateDatabase("signInDisp", this.signInDisp);
+            this.updateDatabase("createSchedDisp", this.createSchedDisp);
+            this.updateDatabase("viewSchedDisp", this.viewSchedDisp);
+            
         },
         
         //To view an old schedule that you made or that is public and you are a guest
@@ -607,7 +931,9 @@ var app = new Vue({
 
             //signInScreen.style.display = "block";
             createSchedScreen.style.display = "none";
+            this.createSchedDisp = "none";
             viewSchedScreen.style.display = "block";
+            this.viewSchedDisp = "block";
             
             this.schedDisplay = oldTrips;
             //this.genSchedules = oldTrips;
@@ -622,6 +948,22 @@ var app = new Vue({
             
             var newSchButton = document.getElementById("moreSched");
             newSchButton.disabled = true;
+            
+            //Update firebase
+            this.updateDatabase("users", this.users);
+            this.updateDatabase("userIndex", this.userIndex);
+            this.updateDatabase("activeUser", this.activeUser);
+            this.updateDatabase("publicTrips", this.publicTrips);
+            this.updateDatabase("pubSchools", this.pubSchools);
+            this.updateDatabase("schoolDat", this.schoolDat);
+            this.updateDatabase("schedDex", this.schedDex);
+            this.updateDatabase("schedDisplay", this.schedDisplay);
+
+            
+            this.updateDatabase("signInDisp", this.signInDisp);
+            this.updateDatabase("createSchedDisp", this.createSchedDisp);
+            this.updateDatabase("viewSchedDisp", this.viewSchedDisp);
+            
         },
         
         //remove a previously saved trip from user's trips
@@ -629,6 +971,23 @@ var app = new Vue({
             //console.log(uDex);
             //console.log(tDex);
             this.users[uDex].trips.splice(tDex,1);
+            this.users[uDex].schoolsCor.splice(tDex,1);
+            
+            //Update firebase
+            this.updateDatabase("users", this.users);
+            this.updateDatabase("userIndex", this.userIndex);
+            this.updateDatabase("activeUser", this.activeUser);
+            this.updateDatabase("publicTrips", this.publicTrips);
+            this.updateDatabase("pubSchools", this.pubSchools);
+            this.updateDatabase("schoolDat", this.schoolDat);
+            this.updateDatabase("schedDex", this.schedDex);
+            this.updateDatabase("schedDisplay", this.schedDisplay);
+
+            
+            this.updateDatabase("signInDisp", this.signInDisp);
+            this.updateDatabase("createSchedDisp", this.createSchedDisp);
+            this.updateDatabase("viewSchedDisp", this.viewSchedDisp);
+            
         },
         
         //To view public trips
@@ -638,10 +997,28 @@ var app = new Vue({
 
             //signInScreen.style.display = "block";
             createSchedScreen.style.display = "none";
+            this.createSchedDisp = "none";
             viewSchedScreen.style.display = "block";
+            this.viewSchedDisp ="block";
             
             this.schedDisplay = pubTrips;
             this.schedDex = dex;
+            
+            //Update firebase
+            this.updateDatabase("users", this.users);
+            this.updateDatabase("userIndex", this.userIndex);
+            this.updateDatabase("activeUser", this.activeUser);
+            this.updateDatabase("publicTrips", this.publicTrips);
+            this.updateDatabase("pubSchools", this.pubSchools);
+            this.updateDatabase("schoolDat", this.schoolDat);
+            this.updateDatabase("schedDex", this.schedDex);
+            this.updateDatabase("schedDisplay", this.schedDisplay);
+
+            
+            this.updateDatabase("signInDisp", this.signInDisp);
+            this.updateDatabase("createSchedDisp", this.createSchedDisp);
+            this.updateDatabase("viewSchedDisp", this.viewSchedDisp);
+            
         },
 
         //Helper function called in "createSchedule" method to 

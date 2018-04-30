@@ -10,9 +10,11 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <!-- libraries neded for this page -->
-    <script src="https://www.gstatic.com/firebasejs/4.11.0/firebase.js"></script>
+    
+    <!--<script src="https://www.gstatic.com/firebasejs/4.11.0/firebase.js"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vuefire/1.4.5/vuefire.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
     <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <!-- support for this page -->
     <link rel="stylesheet" href="style.css">
@@ -48,7 +50,7 @@
             <div id="create_schedule_page">
                 <div class="header">
                     <h1>College ConnecTour</h1>
-                    <p id="currUser">User: {{activeUser}}</p>
+                    <p id="currUser">User: {{users[userIndex].username}}</p>
                     <button id="logout" @click="logout()">Logout</button>
                 </div>
                 <hr>
@@ -145,7 +147,7 @@
         <div id="schedViewContainer" style="display:none">
             <div class="header">
                 <h1>College ConnecTour</h1>
-                <p id="currUser">User: {{activeUser}}</p>
+                <p id="currUser">User: {{users[userIndex].username}}</p>
                 <button id="logout" @click="logout()">Logout</button>
             </div>
             <hr>
